@@ -1,0 +1,45 @@
+.App {
+  display: flex;
+  column-gap: 4em;
+  margin: 2em 4em;
+}
+
+.swiped-users {
+  flex: 2
+}
+
+.swiped-users h3 {
+  text-align: center;
+  margin-top: 0;
+}
+
+.user-card {
+  flex: 1;
+  border: 1px black solid;
+  background-color: white;
+}
+
+.user-card .user-card-msg {
+  text-align: center;
+}
+
+.user-card-img img {
+  width: 100%;
+}
+
+.user-card-info {
+  margin: 1em 0.5em;
+  font-weight: bold;
+}
+
+.user-card-action {
+  display: flex;
+  height: 3em;
+  margin-bottom: -1px;
+}
+
+.user-card-action button {
+  flex: 1;
+  padding: 0;
+  font-size: 1.5em;
+}
