@@ -1,5 +1,6 @@
 // for a real-world project, ORM, migration engine,...should be preferred
 // for this simple app I use a very simple way to connect to DB
+// field names returned to frontend are in underscore format (should be camelCase if we have time)
 
 const Pool = require('pg').Pool
 const pool = new Pool({

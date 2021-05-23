@@ -1,8 +1,8 @@
 import './App.css';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
-
-const FAKE_AGE = 22;
+import api from './constants/api';
+import {calculateAge} from './utils/common';
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -14,12 +14,8 @@ function App() {
 
   // fetch users on first render
   useEffect(() => {
-    axios.get('https://dummyapi.io/data/api/user?limit=10', {
-      headers: {
-        'app-id': '60349db146ff8b0837d18351',
-      },
-    }).then(response => {
-      setUsers(response.data.data);
+    axios.get(api.getUsers()).then(response => {
+      setUsers(response.data);
     }).catch(err => {
       console.error(err);
     });
@@ -43,17 +39,17 @@ function App() {
 
   const renderSwipedUsers = (users) => (
     <ul>
-      {users.map(user => <li key={user.id}>{user.firstName}, {user.age || FAKE_AGE}</li>)}
+      {users.map(user => <li key={user.id}>{user.first_name}, {calculateAge(user.year_of_birth)}</li>)}
     </ul>
   );
 
   const renderUserCard = () => (
     <>
       <div className="user-card-img">
-        <img src={currentUser.picture} alt={currentUser.firstName}/>
+        <img src={currentUser.picture} alt={currentUser.first_name}/>
       </div>
       <div className="user-card-info">
-        {currentUser.firstName}, {currentUser.age || FAKE_AGE}
+        {currentUser.first_name}, {calculateAge(currentUser.year_of_birth)}
       </div>
       <div className="user-card-action">
         <button onClick={handleClickPass}>x</button>
