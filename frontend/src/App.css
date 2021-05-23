@@ -1,11 +1,15 @@
-.App {
+main {
   display: flex;
-  column-gap: 4em;
-  margin: 2em 4em;
+  column-gap: 6em;
+  margin: 2em 10em;
+}
+
+header {
+  text-align: center;
 }
 
 .swiped-users {
-  flex: 2
+  flex: 3
 }
 
 .swiped-users h3 {
@@ -13,14 +17,29 @@
   margin-top: 0;
 }
 
-.user-card {
+.swiped-users ul {
+  text-align: center;
+  list-style: none;
+  padding: 0;
+}
+
+.swiped-users ul li {
+  display: flex;
+}
+
+.swiped-users ul li > * {
   flex: 1;
+}
+
+.user-card {
+  flex: 2;
   border: 1px black solid;
   background-color: white;
 }
 
 .user-card .user-card-msg {
   text-align: center;
+  cursor: pointer;
 }
 
 .user-card-img img {
