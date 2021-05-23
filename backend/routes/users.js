@@ -6,7 +6,10 @@ const httpStatus = require('http-status');
 
 router.get('/', jwtVerify, async (req, res, next) => {
   try {
-    const users = await db.findUsers();
+    const swipeSender = parseInt(req.headers.token);
+    const swipes = await db.findSwipesBySender(swipeSender);
+    const excludedIds = [...swipes.map(swipe => swipe.swipe_receiver), swipeSender];
+    const users = await db.findUsersNotIn(excludedIds);
     res.json(users);
   } catch (err) {
     console.error(err);

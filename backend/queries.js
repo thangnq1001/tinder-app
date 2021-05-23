@@ -14,17 +14,17 @@ const pool = new Pool({
 
 /* For user */
 
-const findUsers = (ids) => {
+const findUsersIn = (ids) => {
   return new Promise((resolve, reject) => {
-    let sql = 'SELECT * FROM public.user';
-    // if find users by only some ids
-    if (ids && ids.length) {
-      const params = [];
-      for (let i = 1; i <= ids.length; i++) {
-        params.push('$' + i);
-      }
-      sql += ` WHERE id IN (${params.join(',')})`;
+    if (!ids || !ids.length) {
+      return resolve([]);
     }
+    let sql = 'SELECT * FROM public.user';
+    const params = [];
+    for (let i = 1; i <= ids.length; i++) {
+      params.push('$' + i);
+    }
+    sql += ` WHERE id IN (${params.join(',')})`;
     pool.query(sql, ids, (err, res) => {
       if (err) {
         return reject(err);
@@ -33,6 +33,25 @@ const findUsers = (ids) => {
     });
   });
 };
+
+const findUsersNotIn = (excludedIds) => {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT * FROM public.user';
+    if (excludedIds && excludedIds.length) {
+      const params = [];
+      for (let i = 1; i <= excludedIds.length; i++) {
+        params.push('$' + i);
+      }
+      sql += ` WHERE id NOT IN (${params.join(',')})`;
+    }
+    pool.query(sql, excludedIds, (err, res) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(res.rows);
+    });
+  });
+}
 
 const findUserById = (id) => {
   return new Promise((resolve, reject) => {
@@ -71,7 +90,7 @@ const saveSwipe = (swipeSender, swipeReceiver, isLike) => {
  * @param swipeSender user id of the sender
  * @param swipeReceiver user id of the receiver
  */
-const undoSwipe = (swipeSender, swipeReceiver) => {
+const removeSwipe = (swipeSender, swipeReceiver) => {
   console.log([swipeSender, swipeReceiver]);
   return new Promise((resolve, reject) => {
     pool.query('DELETE FROM public.swipe WHERE swipe_sender = $1 AND swipe_receiver = $2', [swipeSender, swipeReceiver], (err, res) => {
@@ -85,13 +104,13 @@ const undoSwipe = (swipeSender, swipeReceiver) => {
 
 /**
  * @param swipeSender user id
- * @param isLike {boolean | undefined}
+ * @param isLike can be omitted to find both passed and liked
  */
 const findSwipesBySender = (swipeSender, isLike) => {
   return new Promise((resolve, reject) => {
     let sql = 'SELECT * FROM public.swipe WHERE swipe_sender = $1 ';
     let params = [swipeSender];
-    if (typeof isLike === 'boolean') {
+    if (isLike !== '' && isLike != null) {
       sql += ' AND is_like = $2 ';
       params.push(isLike);
     }
@@ -105,9 +124,10 @@ const findSwipesBySender = (swipeSender, isLike) => {
 }
 
 module.exports = {
-  findUsers,
+  findUsersIn,
+  findUsersNotIn,
   findUserById,
   saveSwipe,
-  undoSwipe,
+  removeSwipe,
   findSwipesBySender,
 }

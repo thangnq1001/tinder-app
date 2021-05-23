@@ -17,12 +17,12 @@ router.post('/', jwtVerify, async (req, res) => {
   }
 });
 
-// undo/reset a swipe
+// undo/remove a swipe
 router.delete('/', jwtVerify, async (req, res) => {
   const { swipeReceiver } = req.body;
   const swipeSender = parseInt(req.headers.token);
   try {
-    const result = await db.undoSwipe(swipeSender, swipeReceiver);
+    const result = await db.removeSwipe(swipeSender, swipeReceiver);
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -35,7 +35,7 @@ router.get('/', jwtVerify, async (req, res) => {
   const swipeSender = parseInt(req.headers.token);
   try {
     const swipes = await db.findSwipesBySender(swipeSender, req.query.isLike);
-    const users = await db.findUsers(swipes.map(swipe => swipe.swipe_receiver));
+    const users = await db.findUsersIn(swipes.map(swipe => swipe.swipe_receiver));
     res.json(users);
   } catch (err) {
     console.error(err);
