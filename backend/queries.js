@@ -91,7 +91,6 @@ const saveSwipe = (swipeSender, swipeReceiver, isLike) => {
  * @param swipeReceiver user id of the receiver
  */
 const removeSwipe = (swipeSender, swipeReceiver) => {
-  console.log([swipeSender, swipeReceiver]);
   return new Promise((resolve, reject) => {
     pool.query('DELETE FROM public.swipe WHERE swipe_sender = $1 AND swipe_receiver = $2', [swipeSender, swipeReceiver], (err, res) => {
       if (err) {

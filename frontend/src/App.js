@@ -58,7 +58,6 @@ function App() {
       isLike,
     };
     http.post(api.saveSwipe(), reqBody).then(response => {
-      console.log(response);
       if (isLike) {
         fetchLikedUsers();
       } else {
@@ -72,7 +71,6 @@ function App() {
 
   const handleClickRemoveSwipe = (userId, isLike) => {
     http.delete(api.removeSwipe(), {swipeReceiver: userId}).then(response => {
-      console.log(response);
       if (isLike) {
         fetchLikedUsers();
       } else {
