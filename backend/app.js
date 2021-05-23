@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const users = require('./routes/users');
+const swipes = require('./routes/swipes');
 const cors = require('cors');
 
 const app = express();
@@ -17,5 +18,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/users', users);
+app.use('/api/v1/swipes', swipes);
 
 module.exports = app;

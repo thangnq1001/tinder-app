@@ -12,22 +12,33 @@ const pool = new Pool({
 
 });
 
-const getUsers = () => {
+/* For user */
+
+const findUsers = (ids) => {
   return new Promise((resolve, reject) => {
-    pool.query('SELECT * FROM public.user', (err, res) => {
+    let sql = 'SELECT * FROM public.user';
+    // if find users by only some ids
+    if (ids && ids.length) {
+      const params = [];
+      for (let i = 1; i <= ids.length; i++) {
+        params.push('$' + i);
+      }
+      sql += ` WHERE id IN (${params.join(',')})`;
+    }
+    pool.query(sql, ids, (err, res) => {
       if (err) {
-        reject(err);
+        return reject(err);
       }
       resolve(res.rows);
     });
-  })
+  });
 };
 
-const getUserById = (id) => {
+const findUserById = (id) => {
   return new Promise((resolve, reject) => {
     pool.query('SELECT * FROM public.user WHERE id = $1', [id], (err, res) => {
       if (err) {
-        reject(err);
+        return reject(err);
       }
       if (!res.rows || !res.rows.length) {
         return resolve(null);
@@ -38,7 +49,65 @@ const getUserById = (id) => {
   });
 };
 
+/* For swipe */
+
+/**
+ * @param swipeSender user id of the sender
+ * @param swipeReceiver user id of the receiver
+ * @param isLike {boolean}
+ */
+const saveSwipe = (swipeSender, swipeReceiver, isLike) => {
+  return new Promise((resolve, reject) => {
+    pool.query('INSERT INTO public.swipe (swipe_sender, swipe_receiver, is_like) VALUES ($1, $2, $3)', [swipeSender, swipeReceiver, isLike], (err, res) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(res);
+    });
+  });
+}
+
+/**
+ * @param swipeSender user id of the sender
+ * @param swipeReceiver user id of the receiver
+ */
+const undoSwipe = (swipeSender, swipeReceiver) => {
+  console.log([swipeSender, swipeReceiver]);
+  return new Promise((resolve, reject) => {
+    pool.query('DELETE FROM public.swipe WHERE swipe_sender = $1 AND swipe_receiver = $2', [swipeSender, swipeReceiver], (err, res) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(res);
+    });
+  });
+}
+
+/**
+ * @param swipeSender user id
+ * @param isLike {boolean | undefined}
+ */
+const findSwipesBySender = (swipeSender, isLike) => {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT * FROM public.swipe WHERE swipe_sender = $1 ';
+    let params = [swipeSender];
+    if (typeof isLike === 'boolean') {
+      sql += ' AND is_like = $2 ';
+      params.push(isLike);
+    }
+    pool.query(sql, params, (err, res) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(res.rows);
+    });
+  })
+}
+
 module.exports = {
-  getUsers,
-  getUserById,
+  findUsers,
+  findUserById,
+  saveSwipe,
+  undoSwipe,
+  findSwipesBySender,
 }
